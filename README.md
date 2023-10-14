@@ -1,4 +1,4 @@
 # calypso
 
 
-![alt text](https://github.com/[username]/[reponame]/blob/[branch]/calypso.jpg?raw=true)
+![alt text](https://github.com/SEAL-IIT-KGP/calypso/blob/main/calypso.jpg)
