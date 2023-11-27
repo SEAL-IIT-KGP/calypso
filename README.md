@@ -25,7 +25,7 @@ Sample command to enable both: `python3 calypso.py --target-degree 5 --challenge
 
 ## Running calypso++
 
-Similar to running calypso, except now, `calypso++.py` must be used. Consequently, `--target-degree k` represents an attack on `k` LP-PUF using a cross-architectural model of a `k`-XOR PUF.
+Similar to running calypso, except now, `calypso++.py` must be used. Consequently, `--target-degree k` represents an attack on `k` LP-PUF using a cross-architectural model of a `k`-XOR PUF. For example, to model `1` LP-PUF using a population of APUFs, execute `python3 calypso++.py --target-degree 4 --challenge-num 50000 --cut-length 64 --proc 1 --population 500 -landscape-evolution -aeomebic-reproduction`
 
 ## Jaccard distance
 
