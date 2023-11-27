@@ -30,3 +30,5 @@ Similar to running calypso, except now, `calypso++.py` must be used. Consequentl
 ## Jaccard distance
 
 Both `calypso.py` and `calypso++.py` rely upon accuracy and bias metrics to construct their fitness functions. However, Jaccard distance could also be used as an alternative. We provide a sample in `calypso_jaccard.py`, which uses Jaccard distance to construct its fitness function. Rest all semantics of `calypso_jaccard.py` are similar to `calypso.py`
+
+![calypso](https://github.com/SEAL-IIT-KGP/calypso/blob/main/calypso.jpg "MarineGEO logo")
