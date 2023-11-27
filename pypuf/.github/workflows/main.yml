@@ -1,0 +1,42 @@
+name: Doc Tests
+
+on:
+  push:
+    branches: [ main, v2 ]
+  pull_request:
+    branches: [ main, v2 ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # You can use PyPy versions in python-version.
+      # For example, pypy2 and pypy3
+      matrix:
+        python-version: [3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Requirements
+      run: |
+        pip3 install -r requirements.txt
+        pip3 freeze
+
+    - name: flake8 Linter
+      run:  python3 -m flake8 pypuf
+
+    - name: Pytest
+      run: python3 -m pytest test
+
+    - name: Python Doc Tests
+      run: python3 -m xdoctest pypuf
+
+    - name: Sphinx Doc Tests
+      run: python3 -m sphinx -b doctest docs docs/_build
+
+    - name: Sphinx Documentation Build
+      run: python3 -m sphinx docs docs/_build
