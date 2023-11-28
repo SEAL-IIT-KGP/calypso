@@ -1,4 +1,4 @@
-# calypso
+# CalyPSO
 
 This repository contains accompanying code for "CalyPSO: An Enhanced Search Optimization based Framework to Model Delay Based PUFs" (to be) presented at CHES 2024.
 
