@@ -4,7 +4,7 @@ This repository contains accompanying code for "CalyPSO: An Enhanced Search Opti
 
 ## Setup
 
-Clone the repository to the destination directory (say `CALYPSO_CLONE_DIR`) and setup packages through `pip install -r requirements.txt`.
+Clone the repository to the destination directory (say `CALYPSO_CLONE_DIR`) and setup packages through `pip3 install -r requirements.txt`.
 
 ## Running calypso
 
@@ -59,4 +59,4 @@ Some datasets are larger than what GitHub allows in its normal storage. To avoid
  -aeomebic-reproduction --challenge-file $CALYPSO_CLONE_DIR/datasets/in-house/10XOR-APUF/chal_64_300000_bi.npz --response-file $CALYPSO_CLONE_DIR/datasets/in-house/10XOR-APUF/respG_10_XORPUF_64_NChal_300000_5_meas_Br_98.npz` to model the `10XOR-APUF` cross-architecturally using a `10`-XOR PUF.
 
 
-![calypso](https://github.com/SEAL-IIT-KGP/calypso/blob/main/calypso.jpg "MarineGEO logo")
+![calypso](https://github.com/SEAL-IIT-KGP/calypso/blob/main/calypso.jpg)
