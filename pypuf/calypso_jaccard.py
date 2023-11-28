@@ -75,11 +75,12 @@ class Chromosome():
     def evaluate_puf_fitness(self, golden_challenge_set, target_responses, optimal_bias):
         self.generate_puf()
         predicted_responses = self.puf.eval(golden_challenge_set)
-        matches = np.sum(predicted_responses == target_responses)
-        bias = pypuf.metrics.bias_data(predicted_responses)
-        fitness = matches/len(predicted_responses) - np.abs(np.abs(optimal_bias) - np.abs(bias))
-        return fitness
-
+        ands = 0
+        ors = 0
+        for index in range(len(predicted_responses)):
+            if(predicted_responses[index] == target_responses[index]):
+                ands = ands + 1
+        return ands / (2 * len(predicted_responses) - ands)
 
 class GeneticAlgoWrapper:
     def __init__(self, targetPUF, challenge_set, response_golden_set, n, k, target_response_set, optimal_bias):
@@ -247,7 +248,7 @@ class GeneticAlgoWrapper:
 
 challenges=random_inputs(n=CHALLENGE_LENGTH, N=CHALLENGE_NUM, seed=random.randint(0, 60000))
 puf_seed = random.randint(0, 50)
-targetPUF = lppuf.LPPUFv1(n=CHALLENGE_LENGTH, m=PUF_LENGTH, seed=random.randint(0,100))
+targetPUF = XORArbiterPUF(n=CHALLENGE_LENGTH, k=PUF_LENGTH, seed=random.randint(0, 1000))
 responses = targetPUF.eval(challenges)
 target_vector = []
 optimal_bias = pypuf.metrics.bias_data(responses)

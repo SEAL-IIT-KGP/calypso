@@ -75,12 +75,10 @@ class Chromosome():
     def evaluate_puf_fitness(self, golden_challenge_set, target_responses, optimal_bias):
         self.generate_puf()
         predicted_responses = self.puf.eval(golden_challenge_set)
-        ands = 0
-        ors = 0
-        for index in range(len(predicted_responses)):
-            if(predicted_responses[index] == target_responses[index]):
-                ands = ands + 1
-        return ands / (2 * len(predicted_responses) - ands)
+        matches = np.sum(predicted_responses == target_responses)
+        bias = pypuf.metrics.bias_data(predicted_responses)
+        fitness = matches/len(predicted_responses) - np.abs(np.abs(optimal_bias) - np.abs(bias))
+        return fitness
 
 class GeneticAlgoWrapper:
     def __init__(self, targetPUF, challenge_set, response_golden_set, n, k, target_response_set, optimal_bias):
@@ -107,7 +105,7 @@ class GeneticAlgoWrapper:
 
 
 
-    def evaluate_subset_fitness(self, member):
+    def evaluate_subset_fitness_jaccard(self, member):
         predicted_responses = member.puf.eval(self.golden_challenge_set)
         ands = 0
         ors = 0
@@ -119,7 +117,7 @@ class GeneticAlgoWrapper:
         member.bias = pypuf.metrics.bias_data(predicted_responses)
         return member
 
-    def evaluate_subset_fitness_acc(self, member):
+    def evaluate_subset_fitness(self, member):
         predicted_responses = member.puf.eval(self.golden_challenge_set)
         matches = np.sum(predicted_responses == self.target_responses)
         member.age = member.age + 1
@@ -238,7 +236,7 @@ class GeneticAlgoWrapper:
             if(landscape_evolution_switch and GENERATION % 10 == 0):
                 print("Landscape evolution")
                 for _ in range(int(0.25 * len(self.golden_challenge_set))):
-                    self.golden_challenge_set[random.randint(0, len(self.golden_challenge_set))] = random_inputs(n=CHALLENGE_LENGTH, N=1, seed=random.randint(0, 60000)).reshape((CHALLENGE_LENGTH, ))
+                    self.golden_challenge_set[random.randint(0, len(self.golden_challenge_set) - 1)] = random_inputs(n=CHALLENGE_LENGTH, N=1, seed=random.randint(0, 60000)).reshape((CHALLENGE_LENGTH, ))
                 self.target_responses = targetPUF.eval(challenges)
 
             if(aeomebic_reproduction_switch and GENERATION % 50 == 0):

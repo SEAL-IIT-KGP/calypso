@@ -20,8 +20,9 @@ parser.add_argument('--cut-length', help="The cut length to use", required=True)
 parser.add_argument('--challenge-num', help="Number of challenges to consider", required=True)
 parser.add_argument('--proc', help="Number of processors to split the load on", required=True)
 parser.add_argument('--population', help="Population size",required=True)
-parser.add_argument('-landscape-evolution',help="Perform landscape evolution (default=False)", action='store_true')
 parser.add_argument('-aeomebic-reproduction', help="Perform aeomebic reproduction (default=False)", action='store_true')
+parser.add_argument('--challenge-file', help="Path to the file housing the challenge set", required=True)
+parser.add_argument('--response-file', help="Path to the file housing the response set", required=True)
 args = parser.parse_args()
 
 CHALLENGE_NUM = int(args.challenge_num)
@@ -34,7 +35,6 @@ POPULATION_SIZE = int(args.population)
 PROC = int(args.proc)
 
 # Switches
-landscape_evolution_switch = args.landscape_evolution
 aeomebic_reproduction_switch = args.aeomebic_reproduction
 
 class Chromosome():
@@ -75,14 +75,15 @@ class Chromosome():
     def evaluate_puf_fitness(self, golden_challenge_set, target_responses, optimal_bias):
         self.generate_puf()
         predicted_responses = self.puf.eval(golden_challenge_set)
-        matches = np.sum(predicted_responses == target_responses)
-        bias = pypuf.metrics.bias_data(predicted_responses)
-        fitness = matches/len(predicted_responses) - np.abs(np.abs(optimal_bias) - np.abs(bias))
-        return fitness
-
+        ands = 0
+        ors = 0
+        for index in range(len(predicted_responses)):
+            if(predicted_responses[index] == target_responses[index]):
+                ands = ands + 1
+        return ands / (2 * len(predicted_responses) - ands)
 
 class GeneticAlgoWrapper:
-    def __init__(self, targetPUF, challenge_set, response_golden_set, n, k, target_response_set, optimal_bias):
+    def __init__(self, targetPUF, challenge_set, response_golden_set, n, k, target_response_set, optimal_bias, test_challenges, test_responses):
         self.max_population_size = POPULATION_SIZE
         self.initial_max_population_size = self.max_population_size
         self.n = n
@@ -97,6 +98,8 @@ class GeneticAlgoWrapper:
         self.mutation_std = 0.5
         self.optimal_bias = optimal_bias
         self.crossover_indexes = []
+        self.test_challenges = test_challenges
+        self.test_responses = test_responses
 
     def generate_initial_population(self):
         for _ in range(self.max_population_size):
@@ -213,8 +216,8 @@ class GeneticAlgoWrapper:
 
     def attack(self):
         GENERATION = 1
-        new_challenge_set = random_inputs(n=CHALLENGE_LENGTH, N=100000, seed=random.randint(0, 600))
-        new_response_set = self.targetPUF.eval(new_challenge_set)
+        new_challenge_set = self.test_challenges
+        new_response_set = self.test_responses
         while True:
             random.seed(datetime.now().timestamp())
             np.random.seed(int(datetime.now().timestamp()) + random.randint(0, 10000))
@@ -234,23 +237,26 @@ class GeneticAlgoWrapper:
             GENERATION = GENERATION + 1
             self.mutate_children_round_robin(self.population)
 
-            if(landscape_evolution_switch and GENERATION % 10 == 0):
-                print("Landscape evolution")
-                for _ in range(int(0.25 * len(self.golden_challenge_set))):
-                    self.golden_challenge_set[random.randint(0, len(self.golden_challenge_set) - 1)] = random_inputs(n=CHALLENGE_LENGTH, N=1, seed=random.randint(0, 60000)).reshape((CHALLENGE_LENGTH, ))
-                self.target_responses = targetPUF.eval(challenges)
-
             if(aeomebic_reproduction_switch and GENERATION % 50 == 0):
                 print("Aeomebic reproduction")
                 self.population.pop(len(self.population) - 1)
                 self.population.append(copy.deepcopy(self.population[0]))
 
-challenges=random_inputs(n=CHALLENGE_LENGTH, N=CHALLENGE_NUM, seed=random.randint(0, 60000))
-puf_seed = random.randint(0, 50)
-targetPUF = lppuf.LPPUFv1(n=CHALLENGE_LENGTH, m=PUF_LENGTH, seed=random.randint(0,100))
-responses = targetPUF.eval(challenges)
 target_vector = []
+challenge_data = np.load(args.challenge_file)
+challenges_set = challenge_data[challenge_data.files[0]]
+for challenge in challenges_set:
+    challenge[challenge == 0] = -1
+response_data = np.load(args.response_file)
+responses_set = response_data[response_data.files[0]]
+responses_set[responses_set == 0] = -1
+challenges = challenges_set[0:CHALLENGE_NUM]
+responses = responses_set[0:CHALLENGE_NUM].reshape((CHALLENGE_NUM,))
+
+test_challenges = challenges_set[CHALLENGE_NUM:CHALLENGE_NUM+50000]
+test_responses = responses_set[CHALLENGE_NUM:CHALLENGE_NUM+50000].reshape((50000, ))
+
 optimal_bias = pypuf.metrics.bias_data(responses)
 print("Bias: ", optimal_bias)
-geneticAlgoWrapper = GeneticAlgoWrapper(targetPUF, challenges, target_vector, CHALLENGE_LENGTH, PUF_LENGTH, responses, optimal_bias)
+geneticAlgoWrapper = GeneticAlgoWrapper(None, challenges, target_vector, CHALLENGE_LENGTH, PUF_LENGTH, responses, optimal_bias, test_challenges, test_responses)
 geneticAlgoWrapper.attack()
