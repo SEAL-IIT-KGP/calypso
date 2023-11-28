@@ -43,9 +43,12 @@ We give some more examples here:
 ### BR-PUF 
 
 We have also added a dedicated version of calypso (named `calypso_hardware.py`) to aid in testing out the hardware data. A sample run command: `python3 calypso_hardware.py --target-degree 4 --cut-length 64 --challenge-num 100000 --proc 1 --population 500 -aeomebic-reproduction --challenge-file $CALYPSO_CLONE_DIR/datasets/in-house/BRPUF/Challenge/chal_64_nChal_200000_bi.npz --response-file $CALYPSO_CLONE_DIR/datasets/in-house/BRPUF/GoldenResponses/respG_BRPUF_64_NChal_200000_5_meas_Br_10_all.npz`. This loads the challenge-response data related to BR-PUF and models it (cross-architecturally) using a `4`-XOR PUF. There are 3 main changes wrt. the simulation attacks mentioned before:
-    - We have removed landscape evolution, since in some cases, we will not have the expansive dataset to consider only a subset of it for training.
-    - `--challenge-file` flag takes the absolute path of the .npz file containing the challenge set
-    - `--response-file` flag takes the absolute path of the .npz file containing the response set
+    
+1.  We have removed landscape evolution, since in some cases, we will not have the expansive dataset to consider only a subset of it for training.
+    
+2.  `--challenge-file` flag takes the absolute path of the .npz file containing the challenge set
+    
+3.  `--response-file` flag takes the absolute path of the .npz file containing the response set
 
 ### (11-11) iPUF
 
