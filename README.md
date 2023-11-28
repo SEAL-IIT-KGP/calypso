@@ -21,11 +21,11 @@ Clone the repository to the destination directory (say `CALYPSO_CLONE_DIR`) and 
     - `-landscape-evolution`: Whether to include landscape evolution or not. By default, it is disabled. Upon enabling this switch, in `10` generations, `25%` of the CRPs are evolved to smooth out the problem landscape over a period of time.
     - `-aeomebic-reproduction`: Whether to enable aeomebic reproduction or not. By default, it is disabled.
 
-Sample command to enable both: `python3 calypso.py --target-degree 5 --challenge-num 50000 --cut-length 64 --proc 1 --population 500 -landscape-evolution -aeomebic-reproduction`
+Sample command to enable both: `python3 calypso.py --target-degree 1 --challenge-num 50000 --cut-length 64 --proc 1 --population 500 -landscape-evolution -aeomebic-reproduction`
 
 ## Running calypso++
 
-Similar to running calypso, except now, `calypso++.py` must be used. Consequently, `--target-degree k` represents an attack on `k` LP-PUF using a cross-architectural model of a `k`-XOR PUF. For example, to model `1` LP-PUF using a population of APUFs, execute `python3 calypso++.py --target-degree 1 --challenge-num 50000 --cut-length 64 --proc 1 --population 500 -landscape-evolution -aeomebic-reproduction`
+Similar to running calypso, except now, `calypso++.py` must be used. Consequently, `--target-degree k` represents an attack on `k` LP-PUF using a cross-architectural model of a `k`-XOR PUF. For example, to model `1` LP-PUF using a population of APUFs, execute `python3 calypso++.py --target-degree 1 --challenge-num 50000 --cut-length 2 --proc 1 --population 500 -landscape-evolution -aeomebic-reproduction`
 
 ## Jaccard distance
 
